@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المُسمِّع الذكي AI | Ultra Immersive</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;600;900&display=swap');
+
+        :root {
+            --primary: #c084fc;
+            --accent: #f472b6;
+            --success: #2dd4bf;
+            --error: #fb7185;
+            --bg: #020617;
+            --glass: rgba(15, 23, 42, 0.7);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* خلفية سينمائية متحركة */
+        .vfx-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 30% 30%, #1e1b4b 0%, #020617 100%);
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(192, 132, 252, 0.1) 0%, transparent 70%);
+            border-radius: 50%; animation: move 20s infinite alternate;
+        }
+
+        @keyframes move { from { transform: translate(-20%, -20%); } to { transform: translate(20%, 20%); } }
+
+        .container {
+            width: 95%; max-width: 1000px;
+            z-index: 10;
+        }
+
+        /* الصفحة الأولى: المحرر الدقيق */
+        .setup-card {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            padding: 50px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        h1 {
+            font-size: 3rem; font-weight: 900; margin-bottom: 10px;
+            background: linear-gradient(to bottom right, #fff, var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        textarea {
+            width: 100%; height: 250px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 25px; color: #e2e8f0;
+            padding: 25px; font-size: 1.4rem; line-height: 1.6;
+            outline: none; transition: 0.3s; box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        textarea:focus { border-color: var(--primary); box-shadow: 0 0 30px rgba(192, 132, 252, 0.2); }
+
+        /* الصفحة الثانية: تجربة التلاوة الغامرة */
+        .practice-card {
+            display: none; width: 100%; text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .stats-hud {
+            display: flex; justify-content: center; gap: 50px; margin-bottom: 40px;
+            font-size: 1.2rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .word-display {
+            font-size: 4rem; /* حجم فخم جداً */
+            font-weight: 900; line-height: 1.4;
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 20px; min-height: 300px; padding: 20px;
+        }
+
+        .w-ai {
+            opacity: 0.05; filter: blur(15px);
+            transform: scale(0.8); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .w-ai.active {
+            opacity: 1; filter: blur(0); transform: scale(1.1);
+            color: white; text-shadow: 0 0 40px var(--primary);
+        }
+
+        .w-ai.error {
+            opacity: 0.5; filter: blur(0); color: var(--error);
+            border-bottom: 4px solid var(--error); transform: scale(0.9);
+        }
+
+        /* أزرار التحكم المتطورة */
+        .controls-ai {
+            margin-top: 50px; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .mic-master {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none; color: white; font-size: 2.5rem;
+            cursor: pointer; position: relative; transition: 0.4s;
+            box-shadow: 0 15px 40px rgba(192, 132, 252, 0.4);
+        }
+
+        .mic-master.recording {
+            animation: pulse-ring 1.5s infinite;
+            background: var(--error);
+        }
+
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.7); }
+            70% { box-shadow: 0 0 0 35px rgba(251, 113, 133, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0); }
+        }
+
+        .btn-ready {
+            margin-top: 30px; background: white; color: black;
+            padding: 18px 50px; border-radius: 50px; font-weight: 900;
+            border: none; cursor: pointer; font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .btn-ready:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="vfx-bg"></div>
+    <div class="orb"></div>
+
+    <div class="container">
+        <div id="phase1" class="setup-card">
+            <h1>المُسمِّع الذكي <small style="font-size: 0.9rem; opacity: 0.5;">ULTRA AI</small></h1>
+            <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 30px;">نظام التعرف اللحظي المتطور لمراجعة التلاوة والحفظ.</p>
+            
+            <textarea id="sourceText" placeholder="اكتب النص هنا أو استخدم الإملاء الصوتي للإدخال السريع..."></textarea>
+            
+            <div style="display: flex; gap: 20px; margin-top: 30px;">
+                <button class="btn-ready" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1);" onclick="startDictation()" id="dictBtn">🎙️ إملاء النص</button>
+                <button class="btn-ready" onclick="goToPractice()">بدء التسميع الحي ⚡</button>
+            </div>
+        </div>
+
+        <div id="phase2" class="practice-card">
+            <div class="stats-hud">
+                <div style="color: var(--success)">الدقة: <span id="accVal">100</span>%</div>
+                <div style="color: var(--error)">العثرات: <span id="errVal">0</span></div>
+            </div>
+
+            <div id="wordDisplay" class="word-display"></div>
+
+            <div class="controls-ai">
+                <button id="mainMic" class="mic-master" onclick="togglePracticeMic()">🎤</button>
+                <p id="statusTxt" style="margin-top: 20px; color: #64748b; font-weight: 600;">جاهز للاستماع.. ابدأ التلاوة</p>
+                
+                <button onclick="location.reload()" style="background: none; border: none; color: #475569; cursor: pointer; margin-top: 30px; font-weight: bold;">إنهاء الجلسة ↺</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'ar-SA';
+
+        let originalWords = [];
+        let currentIndex = 0;
+        let errors = 0;
+        let isActive = false;
+
+        // الصفحة 1: إملاء النص
+        function startDictation() {
+            const btn = document.getElementById('dictBtn');
+            if(!isActive) {
+                recognition.onresult = (e) => {
+                    document.getElementById('sourceText').value = Array.from(e.results).map(r => r[0].transcript).join('');
+                };
+                recognition.start();
+                isActive = true;
+                btn.innerText = "🛑 توقف";
+                btn.style.borderColor = "var(--error)";
+            } else {
+                recognition.stop();
+                isActive = false;
+                btn.innerText = "🎙️ إملاء النص";
+                btn.style.borderColor = "rgba(255,255,255,0.1)";
+            }
+        }
+
+        // الانتقال للصفحة 2
+        function goToPractice() {
+            const text = document.getElementById('sourceText').value.trim();
+            if(!text) return alert("يرجى إدخال النص أولاً");
+
+            originalWords = text.split(/\s+/);
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = originalWords.map((w, i) => `<span class="w-ai" id="word-${i}">${w}</span>`).join('');
+
+            document.getElementById('phase1').style.display = 'none';
+            document.getElementById('phase2').style.display = 'block';
+            if(isActive) recognition.stop();
+            isActive = false;
+        }
+
+        // الصفحة 2: منطق التسميع اللحظي
+        function togglePracticeMic() {
+            const btn = document.getElementById('mainMic');
+            if(!isActive) {
+                recognition.onresult = (e) => {
+                    const transcript = Array.from(e.results).map(r => r[0].transcript).join(' ').trim();
+                    processSpeech(transcript);
+                };
+                recognition.start();
+                isActive = true;
+                btn.classList.add('recording');
+                document.getElementById('statusTxt').innerText = "جاري المعالجة الذكية لصوتك...";
+            } else {
+                recognition.stop();
+                isActive = false;
+                btn.classList.remove('recording');
+            }
+        }
+
+        function processSpeech(transcript) {
+            const spokenWords = transcript.split(/\s+/);
+            const latestSpoken = spokenWords[spokenWords.length - 1];
+
+            if(currentIndex < originalWords.length) {
+                const target = originalWords[currentIndex];
+                
+                if(isSimilar(latestSpoken, target)) {
+                    document.getElementById(`word-${currentIndex}`).className = 'w-ai active';
+                    currentIndex++;
+                    // تمرير تلقائي إذا كان النص طويلاً
+                    document.getElementById(`word-${currentIndex-1}`).scrollIntoView({behavior: "smooth", block: "center"});
+                } else if(spokenWords.length > currentIndex) {
+                    // إذا وقع خطأ، يتم التلقين آلياً بعد محاولة واحدة خاطئة
+                    handleError();
+                }
+            }
+            updateStats();
+        }
+
+        function handleError() {
+            const el = document.getElementById(`word-${currentIndex}`);
+            if(el && !el.classList.contains('active')) {
+                el.className = 'w-ai error';
+                errors++;
+                currentIndex++; // تخطي للكلمة التالية (تلقين ذكي)
+                beep();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('errVal').innerText = errors;
+            const acc = Math.max(0, 100 - (errors * 3));
+            document.getElementById('accVal').innerText = Math.round(acc);
+            if(currentIndex >= originalWords.length) {
+                document.getElementById('statusTxt').innerText = "تمت المراجعة بنجاح باهر! 🎉";
+                recognition.stop();
+            }
+        }
+
+        function isSimilar(s1, s2) {
+            const clean = s => s.replace(/[ًٌٍَُِّـ]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").trim();
+            return clean(s1) === clean(s2);
+        }
+
+        function beep() {
+            const ctx = new AudioContext();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine'; o.frequency.value = 140;
+            g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.2);
+            o.connect(g).connect(ctx.destination);
+            o.start(); o.stop(ctx.currentTime + 0.2);
+        }
+    </script>
+</body>
+</html>
